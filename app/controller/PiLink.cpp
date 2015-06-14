@@ -38,6 +38,9 @@
 #include "UI.h"
 #include "Actuator.h"
 
+// bla
+#include "spark_wiring_wifi.h"
+
 
 #if BREWPI_SIMULATE
 #include "Simulator.h"
@@ -116,6 +119,47 @@ void printNibble(uint8_t n)
 	piStream.print((char)(n>=10 ? n-10+'A' : n+'0'));
 }
 
+String bool2Str(bool input)
+{
+    String output;
+    
+    if (input) output = "True";
+    else       output = "False";
+    
+    return output;
+}
+
+
+
+void PiLink::WiFiDoc() {
+    byte mac[6];
+    String mySSID;
+    
+    piStream.print(String("WiFi Connecting=" + bool2Str(WiFi.connecting())));                                    
+    piStream.print(String(", HasCreds=" + bool2Str(WiFi.hasCredentials())));                                    
+    piStream.print(String(", isReady=" + bool2Str(WiFi.ready())));                                    
+    printNewLine();
+    piStream.print(String("MAC Address="));
+
+    WiFi.macAddress(mac);
+
+    for (int i=0; i<6; i++) {
+        if (i) piStream.print(":");
+        piStream.print(mac[i], HEX);
+    }
+    printNewLine();    
+    
+    piStream.print("SSID=");   
+    piStream.print(WiFi.SSID());  
+    piStream.print(", IP=");
+    piStream.print(WiFi.localIP());
+    piStream.print(", subnetMask=");
+    piStream.print(WiFi.subnetMask());
+    printNewLine();
+}
+
+
+    
 void PiLink::receive(void){
 	while (piStream.available() > 0) {
 		char inByte = piStream.read();              
@@ -257,6 +301,10 @@ void PiLink::receive(void){
             flashFirmware();
             break;
             
+                case 'w': // print wifi status
+                    WiFiDoc();    
+                    break;         
+       
         default:
         logWarningInt(WARNING_INVALID_COMMAND, inByte);
         }

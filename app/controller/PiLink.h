@@ -50,6 +50,7 @@ class PiLink{
 	
 	private:
 	
+        static void WiFiDoc(void);
 	static void sendControlSettings(void);
 	static void receiveControlConstants(void);
 	static void sendControlConstants(void);

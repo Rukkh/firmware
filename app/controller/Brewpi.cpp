@@ -38,6 +38,9 @@
 #include "SettingsManager.h"
 #include "UI.h"
 
+//bla
+#include "spark_wiring_wifi.h"
+
 #if BREWPI_SIMULATE
 	#include "Simulator.h"
 #endif
@@ -82,6 +85,12 @@ void setup()
 
     ui.showControllerPage();
     			
+    //Wifi test code here
+    
+    WiFi.on();
+    WiFi.setCredentials("Subterranean", "none");
+    WiFi.connect();
+     
     logDebug("init complete");
 }
 
