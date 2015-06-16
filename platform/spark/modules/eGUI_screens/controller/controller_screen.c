@@ -103,7 +103,9 @@ char controller_state[MAX_STATE_LEN]="";
 char controller_time[MAX_TIME_LEN]="";
 
 //D4D_DECLARE_COLOR_LABEL(scrController_name, controller_name, COL2_X, ROW1_Y, COL5_X-COL4_GAP-COL2_X, ROW1_CY, FONT_REGULAR, D4D_CONST, NAME_BG_COLOR, REGULAR_TEXT_COLOR);
+#ifndef NO_BREWPI_LOGO
 D4D_DECLARE_STD_PICTURE(scrController_logo, 138, 5, 45, 30, &bmp_brewpi_logo_black_45_30);
+#endif
 
 char beer_text[] = "Beer";
 char fridge_text[] = "Fridge";
@@ -133,8 +135,9 @@ D4D_DECLARE_STD_SCREEN_BEGIN(screen_controller, ScrController_)
         
     //D4D_DECLARE_SCREEN_OBJECT(scrController_name)
 
+#ifndef NO_BREWPI_LOGO
     D4D_DECLARE_SCREEN_OBJECT(scrController_logo)
-        
+#endif        
     D4D_DECLARE_SCREEN_OBJECT(scrController_beertemp)
     D4D_DECLARE_SCREEN_OBJECT(scrController_beersv)
     D4D_DECLARE_SCREEN_OBJECT(scrController_beer)

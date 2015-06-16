@@ -117,7 +117,9 @@ D4D_DECLARE_CDV_LIST(D4D_CONST, scrDeviceTest_devices1, SCRBOOT_DEVICES_CX+SCRBO
 D4D_DECLARE_CDV_LIST(D4D_CONST, scrDeviceTest_devices2, 2*(SCRBOOT_DEVICES_CX+SCRBOOT_DEVICES_CX_GAP), SCRBOOT_DEVICES_Y, SCRBOOT_DEVICES_CX, SCRBOOT_DEVICES_CY, FONT_ARIAL7_BIG, FONT_ARIAL7, &color_scheme_device, &color_scheme_connection);
 
 // D4D_DECLARE_PICTURE(scrDeviceTest_bmpLogo, 0, 0, 68, 4, &bmp_brewpi_logo_black_68_48, D4D_OBJECT_F_ENABLED|D4D_OBJECT_F_VISIBLE, NULL, NULL);
+#ifndef NO_BREWPI_LOGO
 D4D_DECLARE_STD_PICTURE(scrDeviceTest_bmpLogo, 16, 4, 72, 48, &bmp_brewpi_logo_black_72_48);
+#endif
 
 #define TEST_TEXT_X  108
 #define TEST_TEXT_CY  12
@@ -136,7 +138,10 @@ D4D_DECLARE_STD_SCREEN_BEGIN(screen_devicetest, ScreenDeviceTest_)
     D4D_DECLARE_SCREEN_OBJECT(scrDeviceTest_devices11)
     D4D_DECLARE_SCREEN_OBJECT(scrDeviceTest_devices20)
     D4D_DECLARE_SCREEN_OBJECT(scrDeviceTest_devices21)
+
+#ifndef NO_BREWPI_LOGO
     D4D_DECLARE_SCREEN_OBJECT(scrDeviceTest_bmpLogo)
+#endif
     D4D_DECLARE_SCREEN_OBJECT(scrDeviceTest_title)
     D4D_DECLARE_SCREEN_OBJECT(scrDeviceTest_text0)
     D4D_DECLARE_SCREEN_OBJECT(scrDeviceTest_text1)

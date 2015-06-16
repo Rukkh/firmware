@@ -25,15 +25,21 @@
 #include "startup_screen.h"
 #include "Version.h"
 
+#ifndef NO_BREWPI_LOGO
 D4D_DECLARE_STD_PICTURE(scrStartup_logo, 100, 40, 120, 80, &bmp_brewpi_logo_black_120_80);
+#endif
+
 D4D_DECLARE_COLOR_LABEL(scrStartup_version, "BrewPi " VERSION_STRING, 0, 140, 320, 15, FONT_SMALL, D4D_CONST, D4D_COLOR_BLACK, D4D_COLOR_BLACK);
+
 
 char startup_text[] = "Tap screen to re-calibrate touch"; // 32 characters
 
 D4D_DECLARE_COLOR_LABEL(scrStartup_text, startup_text, 160-16*7, 200, 32*7, 15, FONT_SMALL, D4D_CONST, D4D_COLOR_BLACK, LOW_TEXT_COLOR);
 
 D4D_DECLARE_SCREEN_BEGIN(screen_startup, ScrStartup_, 0 ,0, (D4D_COOR)(D4D_SCREEN_SIZE_LONGER_SIDE), (D4D_COOR)(D4D_SCREEN_SIZE_SHORTER_SIDE), NULL, 0, NULL, (D4D_SCR_F_DEFAULT|D4D_SCR_F_TOUCHENABLE), NULL)
-    D4D_DECLARE_SCREEN_OBJECT(scrStartup_logo)
+#ifndef NO_BREWPI_LOGO
+            D4D_DECLARE_SCREEN_OBJECT(scrStartup_logo)
+#endif
     D4D_DECLARE_SCREEN_OBJECT(scrStartup_version)
     D4D_DECLARE_SCREEN_OBJECT(scrStartup_text)    
 D4D_DECLARE_SCREEN_END()        
