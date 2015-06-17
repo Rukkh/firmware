@@ -17,6 +17,9 @@
  * along with BrewPi.  If not, see <http://www.gnu.org/licenses/>.
  */ 
 
+
+#define NO_BREWPI_LOGO 1
+
 #ifndef _BREWPI_LOGO_H
 #define _BREWPI_LOGO_H
 
