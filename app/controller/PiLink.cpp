@@ -40,7 +40,8 @@
 
 // bla
 #include "spark_wiring_wifi.h"
-
+#include "spark_wiring_tcpclient.h"
+#include "spark_wiring_tcpserver.h"
 
 #if BREWPI_SIMULATE
 #include "Simulator.h"
@@ -157,11 +158,22 @@ void PiLink::WiFiDoc() {
     piStream.print(WiFi.subnetMask());
     printNewLine();
 }
-
-
+/*
+void PiLink::tcpStatus() {
+    
+    piStream.print("TCP ClientCon=");   
+    piStream.print(bool2Str(client.connected()));
+    
+    piStream.print("Available=");   
+    piStream.print(client.available());
+    
+}
+*/
     
 void PiLink::receive(void){
-	while (piStream.available() > 0) {
+ 
+     
+        while (piStream.available() > 0) {
 		char inByte = piStream.read();              
 		switch(inByte){
 		case ' ':
@@ -269,6 +281,14 @@ void PiLink::receive(void){
 			logInfo(INFO_EEPROM_INITIALIZED);
 			settingsManager.loadSettings();
 			break;
+                        
+                case 'x':
+                    //server.print(inByte);
+                    piStream.print("That's no small moon! ");
+                   // piStream.print("Available=");   
+                    piStream.print(bool2Str(myClient.connected()));
+                   // tcpStatus();
+                    break;
 
 		case 'd': // list devices in eeprom order
 			openListResponse('d');
