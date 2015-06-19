@@ -38,6 +38,11 @@
 #include "SettingsManager.h"
 #include "UI.h"
 
+//bla
+#include "spark_wiring_wifi.h"
+#include "spark_wiring_tcpclient.h"
+#include "spark_wiring_tcpserver.h"
+
 #if BREWPI_SIMULATE
 	#include "Simulator.h"
 #endif
@@ -46,6 +51,8 @@
 
 // instantiate and configure the sensors, actuators and controllers we want to use
 
+//static const char* SSID = "Subterranean";
+//static const char* PASSWORD= "passgoeshere";
 
 void setup(void);
 void loop (void);
@@ -57,6 +64,9 @@ DelayImpl wait = DelayImpl(DELAY_IMPL_CONFIG);
 
 ValueActuator alarm;
 UI ui;
+
+TCPServer myServer = TCPServer(1023);
+TCPClient myClient;
 
 void setup()
 {
@@ -86,6 +96,13 @@ void setup()
 
     ui.showControllerPage();
     			
+    //Wifi test code here
+    
+    WiFi.on();
+    //WiFi.setCredentials(SSID, PASSWORD);
+    WiFi.connect();
+    myServer.begin();
+    
 	logDebug("init complete");
 }
 
@@ -113,6 +130,13 @@ void brewpiLoop(void)
     tempControl.updatePwm();
     //listen for incoming serial connections while waiting to update
     piLink.receive();
+    
+  /*  if (myClient.connected() == false) {
+        // if no client is yet connected, check for a new connection
+        myClient = myServer.available();
+        myClient.print("Welcome");
+        
+    }*/
 
 }
 
