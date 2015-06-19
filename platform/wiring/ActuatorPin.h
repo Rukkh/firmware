@@ -1,30 +1,56 @@
-/* 
- * File:   ArduinoActuator.h
- * Author: mat
+/*
+ * Copyright 2015 BrewPi/Elco Jacobs.
+ * Copyright 2015 Matthew McGowan.
  *
- * Created on 19 August 2013, 20:32
+ * This file is part of BrewPi.
+ *
+ * BrewPi is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BrewPi is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BrewPi.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 
 #pragma once
 
+#include "Platform.h"
 #include "Actuator.h"
 
-class DigitalPinActuator ACTUATOR_BASE_CLASS_DECL
+class DigitalPinActuator:
+    public Actuator
 {
-	private:
-	bool invert;
-	uint8_t pin;
-	public:
-	DigitalPinActuator(uint8_t pin, bool invert) {
-		this->invert = invert;
-		this->pin = pin;
-		setActive(false);
-		pinMode(pin, OUTPUT);
-	}
-	
-	inline ACTUATOR_METHOD void setActive(bool active) {
-		digitalWrite(pin, active^invert ? HIGH : LOW);
-	}
-	
-	bool isActive() { return ((digitalRead(pin)!=LOW) ^ invert); }
+    private:
+        bool    invert;
+        uint8_t pin;
+
+    public:
+        DigitalPinActuator(uint8_t pin,
+                           bool    invert);
+
+        ~DigitalPinActuator()
+        {
+        }
+
+        inline void setActive(bool active)
+        {
+            digitalWrite(pin, (active ^ invert) ? HIGH : LOW);
+        }
+
+        inline bool isActive()
+        {
+            return ((digitalRead(pin) != LOW) ^ invert);
+        }
+
+        void write(uint8_t val)
+        {
+        }
 };

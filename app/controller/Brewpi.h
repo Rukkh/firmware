@@ -39,6 +39,7 @@
 #define BREWPI_BOARD_PHOTON 'y'
 #define BREWPI_BOARD_UNKNOWN '?'
 
+
 /*
  * Defines global config for the brewpi project. This file is included in every file in the project to ensure conditional
  * compilation directives are recognized.
@@ -61,3 +62,4 @@
 #endif
 #include "AppConfigDefault.h"
 
+#define VERSION_STRING "0.2.10"

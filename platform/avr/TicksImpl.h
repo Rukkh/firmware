@@ -9,12 +9,7 @@
 #ifndef TICKSIMPL_H_
 #define TICKSIMPL_H_
 
-typedef uint16_t tcduration_t;
-typedef uint32_t ticks_millis_t;
-typedef uint32_t ticks_micros_t;
-typedef uint16_t ticks_seconds_t;
-typedef uint8_t ticks_seconds_tiny_t;
-
+#include "Platform.h"
 #include "TicksWiring.h"
 
 // Determine the type of Ticks needed
@@ -36,7 +31,7 @@ typedef uint8_t ticks_seconds_tiny_t;
 	#define TICKS_IMPL_CONFIG
 #endif	// BREWPI_EMULATE
 
-extern TicksImpl ticks;
+extern TicksImpl TICKS;
 
 // Determine the type of delay required.
 // For emulation, don't delay, since time in the emulator is not real time, so the delay is meaningless.

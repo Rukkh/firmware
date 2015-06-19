@@ -27,23 +27,16 @@
 #include "Sensor.h"
 #include "EepromTypes.h"
 #include "ActuatorAutoOff.h"
+#include "ActuatorPwm.h"
 #include "ModeControl.h"
-#include "TicksImpl.h"
+#include "Ticks.h"
 
 // Set minimum off time to prevent short cycling the compressor in seconds
 const uint16_t MIN_COOL_OFF_TIME = 300;
-// Use a minimum off time for the heater as well, so it heats in cycles, not lots of short bursts
-const uint16_t MIN_HEAT_OFF_TIME = 300;
 // Minimum on time for the cooler.
-const uint16_t MIN_COOL_ON_TIME = 180;
-// Minimum on time for the heater.
-const uint16_t MIN_HEAT_ON_TIME = 180;
-// Use a large minimum off time in fridge constant mode. No need for very fast cycling.
-const uint16_t MIN_COOL_OFF_TIME_FRIDGE_CONSTANT = 600;
-// Set a minimum off time between switching between heating and cooling
-const uint16_t MIN_SWITCH_TIME = 600;
+const uint16_t MIN_COOL_ON_TIME = 120;
 // Time allowed for peak detection
-const uint16_t COOL_PEAK_DETECT_TIME = 1800;
+const uint16_t COOL_PEAK_DETECT_TIME = 900;
 const uint16_t HEAT_PEAK_DETECT_TIME = 900;
 
 // These two structs are stored in and loaded from EEPROM
@@ -95,6 +88,11 @@ struct ControlConstants{
 	uint8_t lightAsHeater;		// use the light to heat rather than the configured heater device
 	uint8_t rotaryHalfSteps; // define whether to use full or half steps for the rotary encoder
 	temperature pidMax;
+    uint8_t pwmPeriod;
+	bool fridgePwmAutoScale;
+	bool beerPwmAutoScale;
+	fixed7_9 fridgePwmScale;
+	fixed7_9 beerPwmScale;
 };
 
 #define EEPROM_TC_SETTINGS_BASE_ADDRESS 0
@@ -108,11 +106,9 @@ enum states{
 	HEATING,					// 3
 	COOLING,					// 4
 	WAITING_TO_COOL,			// 5
-	WAITING_TO_HEAT,			// 6
-	WAITING_FOR_PEAK_DETECT,	// 7
-	COOLING_MIN_TIME,			// 8
-	HEATING_MIN_TIME,			// 9
-	NUM_STATES
+	WAITING_FOR_PEAK_DETECT,	// 6
+	COOLING_MIN_TIME,			// 7
+	NUM_STATES                  // 8
 };
 
 #define TC_STATE_MASK 0x7;	// 3 bits
@@ -138,7 +134,7 @@ enum states{
 class TempControl{
 	public:
 	
-	TempControl(){};
+	TempControl();
 	~TempControl(){};
 	
 	TEMP_CONTROL_METHOD void init(void);
@@ -148,6 +144,8 @@ class TempControl{
 	TEMP_CONTROL_METHOD void updatePID(void);
 	TEMP_CONTROL_METHOD void updateState(void);
 	TEMP_CONTROL_METHOD void updateOutputs(void);
+	TEMP_CONTROL_METHOD void updatePwm(void);
+
 	TEMP_CONTROL_METHOD void detectPeaks(void);
 	
 	TEMP_CONTROL_METHOD void loadSettings(eptr_t offset);
@@ -226,8 +224,9 @@ class TempControl{
 	TEMP_CONTROL_FIELD TempSensor* beerSensor;
 	TEMP_CONTROL_FIELD TempSensor* fridgeSensor;
 	TEMP_CONTROL_FIELD BasicTempSensor* ambientSensor;
-	TEMP_CONTROL_FIELD Actuator* heater;
-	TEMP_CONTROL_FIELD Actuator* cooler; 
+	TEMP_CONTROL_FIELD ActuatorPwm* chamberHeater;
+	TEMP_CONTROL_FIELD ActuatorPwm* beerHeater;
+	TEMP_CONTROL_FIELD Actuator* chamberCooler; 
 	TEMP_CONTROL_FIELD Actuator* light;
 	TEMP_CONTROL_FIELD Actuator* fan;
 	TEMP_CONTROL_FIELD AutoOffActuator cameraLight;
@@ -237,10 +236,7 @@ class TempControl{
 	TEMP_CONTROL_FIELD ControlConstants cc;
 	TEMP_CONTROL_FIELD ControlSettings cs;
 	TEMP_CONTROL_FIELD ControlVariables cv;
-	
-	// Defaults for control constants. Defined in cpp file, copied with memcpy_p
-	static const ControlConstants ccDefaults;
-			
+
 	private:
 	// keep track of beer setting stored in EEPROM
 	TEMP_CONTROL_FIELD temperature storedBeerSetting;
@@ -258,6 +254,8 @@ class TempControl{
 	TEMP_CONTROL_FIELD bool doNegPeakDetect;
 	TEMP_CONTROL_FIELD bool doorOpen;
 	
+
+
 	friend class TempControlState;
 };
 	
