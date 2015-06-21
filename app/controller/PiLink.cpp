@@ -135,11 +135,12 @@ void PiLink::WiFiDoc() {
     byte mac[6];
     String mySSID;
     
-    piStream.print(String("WiFi Connecting=" + bool2Str(WiFi.connecting())));                                    
-    piStream.print(String(", HasCreds=" + bool2Str(WiFi.hasCredentials())));                                    
-    piStream.print(String(", isReady=" + bool2Str(WiFi.ready())));                                    
-    printNewLine();
-    piStream.print(String("MAC Address="));
+    piLink.print("WiFi Connecting=%u, HasCreds=%u, isReady=%u \n", 
+                 bool2int(WiFi.connecting()), 
+                 bool2int(WiFi.hasCredentials()),
+                 bool2int(WiFi.ready()));
+            
+    print("MAC Address=");
 
     WiFi.macAddress(mac);
 
@@ -241,13 +242,13 @@ void PiLink::receive(void){
 			break;
 		case 'l': // Display content requested
 			printResponse('L');						
-			piStream.print('[');
+			print('[');
 			char stringBuffer[21];
 			for(uint8_t i=0;i<4;i++){
 				display.getLine(i, stringBuffer);
 				print_P(PSTR("\"%s\""), stringBuffer);
 				char close = (i<3) ? ',':']';
-				piStream.print(close);
+				print(close);
 			}							
 			printNewLine();						
 			break;
@@ -260,10 +261,10 @@ void PiLink::receive(void){
 			openListResponse('E');
 			for (uint16_t i=0; i<1024;) {
 				if (i>0) {
-					piLink.printNewLine();
-					piLink.print(',');
+					printNewLine();
+					print(',');
 				}
-				piLink.print('\"');
+				 piLink.print('\"');
 				for (uint8_t j=0; j<64; j++) {
 					uint8_t d = eepromAccess.readByte(i++);
 					printNibble(d>>4);
@@ -282,11 +283,8 @@ void PiLink::receive(void){
 			break;
                         
                 case 'x':
-                    //server.print(inByte);
-                    piStream.print("That's no small moon! ");
-                   // piStream.print("Available=");   
-                    piStream.print(bool2Str(myClient.connected()));
-                   // tcpStatus();
+                    print("Shooting womp rats in beggars canyon ");
+                    tcpStatus();
                     break;
 
 		case 'd': // list devices in eeprom order

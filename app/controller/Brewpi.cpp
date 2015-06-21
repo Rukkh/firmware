@@ -96,12 +96,14 @@ void setup()
 
     ui.showControllerPage();
     			
-    //Wifi test code here
-    
-    WiFi.on();
-    //WiFi.setCredentials(SSID, PASSWORD);
-    WiFi.connect();
-    myServer.begin();
+    //If there is no Credentials, don't turn the wifi on.
+   // if (WiFi.hasCredentials())
+   // {
+        WiFi.on();
+        WiFi.connect();
+        
+        myServer.begin();
+  //  }
     
 	logDebug("init complete");
 }
@@ -131,12 +133,17 @@ void brewpiLoop(void)
     //listen for incoming serial connections while waiting to update
     piLink.receive();
     
-  /*  if (myClient.connected() == false) {
+    if (myClient.connected()) {
+        // echo all available bytes back to the client
+        while (myClient.available()) {
+            myServer.write(myClient.read());
+        }
+    } else {
         // if no client is yet connected, check for a new connection
         myClient = myServer.available();
-        myClient.print("Welcome");
-        
-    }*/
+    }
+    
+
 
 }
 
