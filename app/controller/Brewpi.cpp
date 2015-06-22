@@ -38,11 +38,6 @@
 #include "SettingsManager.h"
 #include "UI.h"
 
-//bla
-#include "spark_wiring_wifi.h"
-#include "spark_wiring_tcpclient.h"
-#include "spark_wiring_tcpserver.h"
-
 #if BREWPI_SIMULATE
 	#include "Simulator.h"
 #endif
@@ -50,9 +45,6 @@
 // global class objects static and defined in class cpp and h files
 
 // instantiate and configure the sensors, actuators and controllers we want to use
-
-//static const char* SSID = "Subterranean";
-//static const char* PASSWORD= "passgoeshere";
 
 void setup(void);
 void loop (void);
@@ -65,8 +57,7 @@ DelayImpl wait = DelayImpl(DELAY_IMPL_CONFIG);
 ValueActuator alarm;
 UI ui;
 
-TCPServer myServer = TCPServer(1023);
-TCPClient myClient;
+
 
 void setup()
 {
@@ -95,16 +86,7 @@ void setup()
         eepromManager.initializeEeprom();
 
     ui.showControllerPage();
-    			
-    //If there is no Credentials, don't turn the wifi on.
-   // if (WiFi.hasCredentials())
-   // {
-        WiFi.on();
-        WiFi.connect();
-        
-        myServer.begin();
-  //  }
-    
+		
 	logDebug("init complete");
 }
 
@@ -133,18 +115,6 @@ void brewpiLoop(void)
     //listen for incoming serial connections while waiting to update
     piLink.receive();
     
-    if (myClient.connected()) {
-        // echo all available bytes back to the client
-        while (myClient.available()) {
-            myServer.write(myClient.read());
-        }
-    } else {
-        // if no client is yet connected, check for a new connection
-        myClient = myServer.available();
-    }
-    
-
-
 }
 
 void loop() {

@@ -36,6 +36,7 @@
 #include "PiLinkHandlers.h"
 #include "UI.h"
 #include "Actuator.h"
+#include "streamMgr.h" 
 
 // bla
 #include "spark_wiring_wifi.h"
@@ -71,7 +72,7 @@
         StdIO stdIO;
         #define piStream stdIO
 #else
-	#define piStream Serial
+	streamMgr piStream;
 #ifdef SPARK
     #define SERIAL_READY(x) 1
 #else
@@ -83,7 +84,7 @@ bool PiLink::firstPair;
 char PiLink::printfBuff[PRINTF_BUFFER_SIZE];
                 
 void PiLink::init(void){
-	piStream.begin(57600);	
+	piStream.begin();	
 }
 
 // create a printf like interface to the Arduino Serial function. Format string stored in PROGMEM
@@ -119,14 +120,10 @@ void printNibble(uint8_t n)
 	piStream.print((char)(n>=10 ? n-10+'A' : n+'0'));
 }
 
-String bool2Str(bool input)
+uint8_t bool2int(bool input)
 {
+    return (input ? 1 : 0) ;
     String output;
-    
-    if (input) output = "True";
-    else       output = "False";
-    
-    return output;
 }
 
 
@@ -135,17 +132,17 @@ void PiLink::WiFiDoc() {
     byte mac[6];
     String mySSID;
     
-    piLink.print("WiFi Connecting=%u, HasCreds=%u, isReady=%u \n", 
+    print((char *)"WiFi Connecting=%u, HasCreds=%u, isReady=%u \r\n", 
                  bool2int(WiFi.connecting()), 
                  bool2int(WiFi.hasCredentials()),
                  bool2int(WiFi.ready()));
             
-    print("MAC Address=");
+    print((char *)"MAC Address=");
 
     WiFi.macAddress(mac);
 
     for (int i=0; i<6; i++) {
-        if (i) piStream.print(":");
+        if (i) piStream.print(':');
         piStream.print(mac[i], HEX);
     }
     printNewLine();    
@@ -158,20 +155,9 @@ void PiLink::WiFiDoc() {
     piStream.print(WiFi.subnetMask());
     printNewLine();
 }
-/*
-void PiLink::tcpStatus() {
-    
-    piStream.print("TCP ClientCon=");   
-    piStream.print(bool2Str(client.connected()));
-    
-    piStream.print("Available=");   
-    piStream.print(client.available());
-    
-}
-*/
     
 void PiLink::receive(void){
- 
+    piStream.arbitrate();
      
         while (piStream.available() > 0) {
 		char inByte = piStream.read();              
@@ -283,8 +269,9 @@ void PiLink::receive(void){
 			break;
                         
                 case 'x':
-                    print("Shooting womp rats in beggars canyon ");
-                    tcpStatus();
+                    print((char *)"TCP Connected=");
+                    print(bool2int(piStream.tcpStatus()));
+                    printNewLine();
                     break;
 
 		case 'd': // list devices in eeprom order
